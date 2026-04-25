@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>A Gift For You</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;1,600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0515}
+
+/* ── BACKGROUND ── */
+#bg{position:fixed;inset:0;z-index:0}
+
+/* ── STAGES ── */
+.stage{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .6s}
+.stage.active{opacity:1;pointer-events:all}
+
+/* ── STAGE 1: GIFT BOX ── */
+#stage-gift{perspective:1000px}
+#gift-scene{position:relative;width:260px;height:320px;transform-style:preserve-3d}
+
+/* crackers */
+.cracker{position:absolute;bottom:10px;display:flex;flex-direction:column;align-items:center;gap:0;transition:all .5s}
+#cl{left:-95px;transform:rotate(-18deg)}
+#cr{right:-95px;transform:rotate(18deg)}
+.ck-end{width:28px;height:18px;background:radial-gradient(ellipse,#ffe066,#f0a500);border-radius:50%;box-shadow:0 0 8px #f0a50088}
+.ck-mid{width:16px;height:90px;background:linear-gradient(180deg,#7c3aed,#a855f7,#6d28d9);box-shadow:inset 2px 0 6px rgba(255,255,255,.2),0 0 12px #a855f755;border-radius:3px;position:relative;overflow:hidden}
+.ck-mid::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent,transparent 10px,rgba(255,255,255,.08) 10px,rgba(255,255,255,.08) 12px)}
+.ck-knot{width:22px;height:10px;background:radial-gradient(#ffe066,#d4900a);border-radius:50%}
+
+/* box */
+#box-wrap{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:200px;height:200px;cursor:pointer;transition:transform .3s}
+#box-wrap:hover{transform:translateX(-50%) scale(1.03)}
+#box-body{position:absolute;bottom:0;width:200px;height:150px;border-radius:6px;
+  background:linear-gradient(135deg,#b91c1c 0%,#dc2626 40%,#ef4444 70%,#b91c1c 100%);
+  box-shadow:0 20px 60px rgba(220,38,38,.5),inset 0 0 40px rgba(0,0,0,.25)}
+#box-body::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(255,255,255,.04) 18px,rgba(255,255,255,.04) 36px);border-radius:6px}
+.vrib{position:absolute;left:50%;transform:translateX(-50%);width:28px;height:100%;background:linear-gradient(90deg,#92600a,#f59e0b,#fbbf24,#f59e0b,#92600a);box-shadow:0 0 12px rgba(251,191,36,.5)}
+.hrib{position:absolute;top:50%;transform:translateY(-50%);width:100%;height:28px;background:linear-gradient(180deg,#92600a,#f59e0b,#fbbf24,#f59e0b,#92600a);box-shadow:0 0 12px rgba(251,191,36,.5)}
+#inner-glow{position:absolute;inset:0;border-radius:6px;background:radial-gradient(ellipse at 50% 120%,rgba(255,240,150,.0),transparent 70%);transition:all .8s;pointer-events:none}
+#box-lid{position:absolute;top:-38px;left:-8px;width:216px;height:56px;border-radius:6px;
+  background:linear-gradient(135deg,#991b1b,#b91c1c,#dc2626);
+  box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 2px 8px rgba(255,255,255,.1);
+  transform-origin:center bottom;transition:transform 1.4s cubic-bezier(.4,0,.2,1),opacity .8s;z-index:5}
+#box-lid::before{content:'';position:absolute;left:50%;transform:translateX(-50%);top:0;width:36px;height:100%;background:linear-gradient(90deg,#92600a,#f59e0b,#fbbf24,#f59e0b,#92600a)}
+#box-lid.open{transform:rotateX(-145deg);opacity:.15}
+
+/* bow */
+#bow{position:absolute;top:-88px;left:50%;transform:translateX(-50%);width:90px;height:72px;transition:opacity .6s,transform .6s;z-index:6}
+#bow svg{width:100%;height:100%}
+#bow.gone{opacity:0;transform:translateX(-50%) translateY(-40px) scale(.3)}
+
+/* hint */
+#hint{position:absolute;bottom:-52px;left:50%;transform:translateX(-50%);white-space:nowrap;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:17px;letter-spacing:3px;text-shadow:0 0 20px #fbbf24,0 0 40px #f59e0b88;animation:hpulse 2s infinite}
+@keyframes hpulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── STAGE 2: INNER BOX ── */
+#stage-inner{perspective:900px}
+#inner-scene{position:relative;width:180px;height:220px}
+#ibox-wrap{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:140px;height:140px;cursor:pointer;transition:transform .3s}
+#ibox-wrap:hover{transform:translateX(-50%) scale(1.04)}
+#ibox-body{position:absolute;bottom:0;width:140px;height:105px;border-radius:5px;
+  background:linear-gradient(135deg,#1e3a5f,#1d4ed8,#3b82f6,#1d4ed8);
+  box-shadow:0 16px 48px rgba(59,130,246,.5),inset 0 0 30px rgba(0,0,0,.3)}
+.ivrib{position:absolute;left:50%;transform:translateX(-50%);width:18px;height:100%;background:linear-gradient(90deg,#92600a,#f59e0b,#fbbf24,#f59e0b,#92600a)}
+.ihrib{position:absolute;top:50%;transform:translateY(-50%);width:100%;height:18px;background:linear-gradient(180deg,#92600a,#f59e0b,#fbbf24,#f59e0b,#92600a)}
+#ibox-lid{position:absolute;top:-26px;left:-6px;width:152px;height:38px;border-radius:5px;
+  background:linear-gradient(135deg,#1e3a5f,#1e40af,#2563eb);
+  box-shadow:0 6px 18px rgba(0,0,0,.4);
+  transform-origin:center bottom;transition:transform 1.2s cubic-bezier(.4,0,.2,1),opacity .6s;z-index:5}
+#ibox-lid::before{content:'';position:absolute;left:50%;transform:translateX(-50%);top:0;width:22px;height:100%;background:linear-gradient(90deg,#92600a,#f59e0b,#fbbf24,#f59e0b,#92600a)}
+#ibox-lid.open{transform:rotateX(-140deg);opacity:.1}
+#ibow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:64px;height:50px;transition:opacity .5s,transform .5s;z-index:6}
+#ibow.gone{opacity:0;transform:translateX(-50%) translateY(-30px) scale(.2)}
+#ihint{position:absolute;bottom:-46px;left:50%;transform:translateX(-50%);white-space:nowrap;color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:2px;animation:hpulse 2s infinite;text-shadow:0 0 16px #3b82f6}
+
+/* ── STAGE 3: BOOK ── */
+#stage-book{background:rgba(5,2,15,.88);z-index:20}
+#book-container{transform:scale(.3) rotateY(60deg);opacity:0;transition:transform 1.2s cubic-bezier(.34,1.4,.64,1),opacity .8s}
+#stage-book.active #book-container{transform:scale(1) rotateY(0deg);opacity:1}
+#book{display:flex;width:680px;height:420px;box-shadow:0 60px 120px rgba(0,0,0,.95);border-radius:4px 14px 14px 4px;filter:drop-shadow(0 0 40px rgba(120,60,20,.4))}
+.bspine{width:52px;flex-shrink:0;background:linear-gradient(180deg,#2c1304,#5c2d0e,#3d1a06,#5c2d0e,#2c1304);border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:center;box-shadow:inset -4px 0 12px rgba(0,0,0,.6),inset 3px 0 8px rgba(255,180,80,.08)}
+.bspine span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:#c9956a;letter-spacing:3px;opacity:.85}
+.bpage{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:36px 28px}
+.bpage.bleft{background:linear-gradient(to right,#fef3e0,#fdf0d8,#f9e8ca);border-right:1px solid #d4a96a}
+.bpage.bright{background:linear-gradient(to left,#fef3e0,#fdf0d8,#f9e8ca);border-radius:0 14px 14px 0}
+.bpage::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(transparent,transparent 30px,rgba(160,120,70,.12) 30px,rgba(160,120,70,.12) 31px);pointer-events:none}
+.bpage::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,200,100,.08),transparent 60%);pointer-events:none}
+.corn{position:absolute;width:22px;height:22px;border-color:#c9a870;border-style:solid;opacity:.55}
+.corn.tl{top:14px;left:14px;border-width:2px 0 0 2px}
+.corn.tr{top:14px;right:14px;border-width:2px 2px 0 0}
+.corn.bl{bottom:14px;left:14px;border-width:0 0 2px 2px}
+.corn.br{bottom:14px;right:14px;border-width:0 2px 2px 0}
+.pnum{position:absolute;bottom:14px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:#b09070}
+.bleft .pnum{right:20px}.bright .pnum{left:20px}
+.pdeco{color:#9a7040;font-size:18px;opacity:.6;letter-spacing:6px}
+.part-img{width:110px;height:82px}
+.pmain{font-family:'Playfair Display',serif;font-size:22px;color:#3d1f0a;text-align:center;line-height:1.45;position:relative;z-index:1}
+.pmain em{display:block;font-size:27px;font-style:italic;margin-top:4px}
+.bleft .pmain em{color:#b91c1c}.bright .pmain em{color:#6d28d9}
+.pcredit{font-family:'Cormorant Garamond',serif;font-size:10px;color:#a07050;letter-spacing:2.5px;text-transform:uppercase;position:relative;z-index:1}
+#closebtn{position:absolute;top:-14px;right:-14px;width:30px;height:30px;background:radial-gradient(#8b1a1a,#c0392b);color:#fff;border:none;border-radius:50%;font-size:15px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:5;transition:transform .2s}
+#closebtn:hover{transform:scale(1.2)}
+#bookwrap{position:relative}
+
+/* ── PARTICLES ── */
+.spark{position:fixed;border-radius:50%;pointer-events:none;animation:sparkfly linear forwards}
+@keyframes sparkfly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.2)}}
+.rib{position:fixed;pointer-events:none;border-radius:3px;animation:ribfly linear forwards}
+@keyframes ribfly{0%{opacity:1;transform:translate(0,0) rotate(0deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(var(--tr))}}
+
+/* label above book */
+#book-label{font-family:'Cormorant Garamond',serif;font-style:italic;color:#d4a96a;letter-spacing:4px;font-size:14px;margin-bottom:18px;text-shadow:0 0 20px rgba(212,169,106,.6);opacity:0;transition:opacity .8s .6s}
+#stage-book.active #book-label{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND: cat canvas -->
+<canvas id="bg"></canvas>
+
+<!-- STAGE 1: GIFT BOX -->
+<div class="stage active" id="stage-gift">
+  <div id="gift-scene">
+    <!-- crackers -->
+    <div class="cracker" id="cl">
+      <div class="ck-end"></div><div class="ck-knot"></div>
+      <div class="ck-mid"></div>
+      <div class="ck-knot"></div><div class="ck-end"></div>
+    </div>
+    <div class="cracker" id="cr">
+      <div class="ck-end"></div><div class="ck-knot"></div>
+      <div class="ck-mid"></div>
+      <div class="ck-knot"></div><div class="ck-end"></div>
+    </div>
+
+    <!-- main gift -->
+    <div id="box-wrap" onclick="openGift()">
+      <div id="bow">
+        <svg viewBox="0 0 90 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="28" cy="30" rx="22" ry="14" fill="#f59e0b" opacity=".9" transform="rotate(-25 28 30)"/>
+          <ellipse cx="62" cy="30" rx="22" ry="14" fill="#d97706" opacity=".9" transform="rotate(25 62 30)"/>
+          <ellipse cx="28" cy="30" rx="14" ry="8" fill="#fbbf24" opacity=".6" transform="rotate(-25 28 30)"/>
+          <ellipse cx="62" cy="30" rx="14" ry="8" fill="#fbbf24" opacity=".6" transform="rotate(25 62 30)"/>
+          <path d="M38 42 Q45 56 52 42" stroke="#92600a" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <path d="M38 42 Q45 56 52 42" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <circle cx="45" cy="38" r="9" fill="#f59e0b"/>
+          <circle cx="45" cy="38" r="5" fill="#fbbf24"/>
+        </svg>
+      </div>
+      <div id="box-lid">
+        <div class="vrib"></div>
+        <div class="hrib"></div>
+      </div>
+      <div id="box-body">
+        <div class="vrib"></div>
+        <div class="hrib"></div>
+        <div id="inner-glow"></div>
+      </div>
+    </div>
+    <div id="hint">✨ Click to Open Gift ✨</div>
+  </div>
+</div>
+
+<!-- STAGE 2: INNER BOX -->
+<div class="stage" id="stage-inner">
+  <div id="inner-scene">
+    <div id="ibox-wrap" onclick="openInner()">
+      <div id="ibow">
+        <svg viewBox="0 0 64 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="20" cy="22" rx="16" ry="10" fill="#f59e0b" opacity=".9" transform="rotate(-22 20 22)"/>
+          <ellipse cx="44" cy="22" rx="16" ry="10" fill="#d97706" opacity=".9" transform="rotate(22 44 22)"/>
+          <ellipse cx="20" cy="22" rx="10" ry="6" fill="#fbbf24" opacity=".6" transform="rotate(-22 20 22)"/>
+          <ellipse cx="44" cy="22" rx="10" ry="6" fill="#fbbf24" opacity=".6" transform="rotate(22 44 22)"/>
+          <path d="M27 30 Q32 40 37 30" stroke="#92600a" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <circle cx="32" cy="27" r="7" fill="#f59e0b"/>
+          <circle cx="32" cy="27" r="4" fill="#fbbf24"/>
+        </svg>
+      </div>
+      <div id="ibox-lid">
+        <div class="ivrib"></div>
+        <div class="ihrib"></div>
+      </div>
+      <div id="ibox-body">
+        <div class="ivrib"></div>
+        <div class="ihrib"></div>
+      </div>
+    </div>
+    <div id="ihint">✦ Click to Open ✦</div>
+  </div>
+</div>
+
+<!-- STAGE 3: BOOK -->
+<div class="stage" id="stage-book">
+  <div id="book-label">— A Special Message For You —</div>
+  <div id="bookwrap">
+    <button id="closebtn" onclick="closeBook()">✕</button>
+    <div id="book-container">
+      <div id="book">
+        <div class="bspine"><span>✦ For You ✦</span></div>
+
+        <div class="bpage bleft">
+          <div class="corn tl"></div><div class="corn tr"></div>
+          <div class="corn bl"></div><div class="corn br"></div>
+          <div class="pdeco">— ✦ —</div>
+          <svg class="part-img" viewBox="0 0 110 82">
+            <defs>
+              <radialGradient id="hg1" cx="50%" cy="60%" r="55%"><stop offset="0%" stop-color="#ff9aa2"/><stop offset="100%" stop-color="#c0392b"/></radialGradient>
+              <radialGradient id="hg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffd6da"/><stop offset="100%" stop-color="#ff9aa2" stop-opacity=".5"/></radialGradient>
+            </defs>
+            <ellipse cx="38" cy="42" rx="26" ry="32" fill="url(#hg1)" opacity=".88"/>
+            <ellipse cx="72" cy="42" rx="26" ry="32" fill="url(#hg1)" opacity=".88"/>
+            <ellipse cx="38" cy="42" rx="16" ry="22" fill="url(#hg2)" opacity=".55"/>
+            <ellipse cx="72" cy="42" rx="16" ry="22" fill="url(#hg2)" opacity=".55"/>
+            <path d="M55 76 L38 42 L72 42 Z" fill="#b91c1c" opacity=".95"/>
+            <circle cx="32" cy="34" r="4" fill="#fff" opacity=".35"/>
+            <circle cx="78" cy="34" r="4" fill="#fff" opacity=".35"/>
+            <path d="M40 20 Q55 12 70 20" stroke="#ffb3ba" stroke-width="2" fill="none" opacity=".6"/>
+            <!-- petals around -->
+            <circle cx="10" cy="30" r="6" fill="#fda4af" opacity=".5"/>
+            <circle cx="100" cy="30" r="6" fill="#fda4af" opacity=".5"/>
+            <circle cx="55" cy="8" r="5" fill="#fda4af" opacity=".4"/>
+          </svg>
+          <div class="pmain">You are very<em>beautiful</em></div>
+          <div class="pcredit">— Designed by AI —</div>
+          <div class="pdeco" style="font-size:14px">✦ ✦ ✦</div>
+          <div class="pnum">I</div>
+        </div>
+
+        <div class="bpage bright">
+          <div class="corn tl"></div><div class="corn tr"></div>
+          <div class="corn bl"></div><div class="corn br"></div>
+          <div class="pdeco">— ✦ —</div>
+          <svg class="part-img" viewBox="0 0 110 82">
+            <defs>
+              <radialGradient id="sg1" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#6d28d9"/></radialGradient>
+              <radialGradient id="sg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ede9fe"/><stop offset="100%" stop-color="#c084fc" stop-opacity=".3"/></radialGradient>
+            </defs>
+            <circle cx="55" cy="38" r="30" fill="url(#sg1)" opacity=".82"/>
+            <circle cx="55" cy="38" r="20" fill="url(#sg2)" opacity=".5"/>
+            <circle cx="43" cy="32" r="6" fill="#7dd3fc" opacity=".9"/>
+            <circle cx="67" cy="32" r="6" fill="#7dd3fc" opacity=".9"/>
+            <circle cx="43" cy="32" r="3" fill="#0ea5e9" opacity=".8"/>
+            <circle cx="67" cy="32" r="3" fill="#0ea5e9" opacity=".8"/>
+            <path d="M43 50 Q55 62 67 50" stroke="#4c1d95" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <circle cx="55" cy="72" r="6" fill="#a855f7" opacity=".5"/>
+            <path d="M30 18 Q55 8 80 18" stroke="#ddd6fe" stroke-width="1.5" fill="none" opacity=".7"/>
+            <!-- stars -->
+            <circle cx="18" cy="55" r="3" fill="#c084fc" opacity=".5"/>
+            <circle cx="92" cy="55" r="3" fill="#c084fc" opacity=".5"/>
+            <circle cx="55" cy="78" r="3" fill="#c084fc" opacity=".4"/>
+          </svg>
+          <div class="pmain">You are very<em>cute</em></div>
+          <div class="pcredit">— Designed by AI —</div>
+          <div class="pdeco" style="font-size:14px">✦ ✦ ✦</div>
+          <div class="pnum">II</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CAT BACKGROUND ──
+const bg = document.getElementById('bg');
+const bx = bg.getContext('2d');
+bg.width = innerWidth; bg.height = innerHeight;
+
+const grd = bx.createRadialGradient(innerWidth/2,innerHeight/2,0,innerWidth/2,innerHeight/2,innerWidth*.85);
+grd.addColorStop(0,'#1a0836'); grd.addColorStop(.5,'#0d0420'); grd.addColorStop(1,'#050210');
+bx.fillStyle=grd; bx.fillRect(0,0,bg.width,bg.height);
+
+for(let i=0;i<280;i++){
+  bx.globalAlpha=.1+Math.random()*.55;
+  bx.fillStyle='#fff';
+  bx.beginPath();bx.arc(Math.random()*bg.width,Math.random()*bg.height,Math.random()*1.4,0,Math.PI*2);bx.fill();
+}
+bx.globalAlpha=1;
+
+function drawCat(px,py,sc,op){
+  bx.save();bx.globalAlpha=op;bx.translate(px,py);bx.scale(sc,sc);
+  // body
+  const bg2=bx.createRadialGradient(0,18,4,0,18,30);bg2.addColorStop(0,'#ddc8a0');bg2.addColorStop(1,'#a87c50');
+  bx.fillStyle=bg2;bx.beginPath();bx.ellipse(0,18,22,28,0,0,Math.PI*2);bx.fill();
+  // head
+  const hg=bx.createRadialGradient(0,-16,3,0,-16,20);hg.addColorStop(0,'#eedcba');hg.addColorStop(1,'#c8a070');
+  bx.fillStyle=hg;bx.beginPath();bx.ellipse(0,-16,19,19,0,0,Math.PI*2);bx.fill();
+  // fur lines on head
+  bx.strokeStyle='rgba(120,80,30,.18)';bx.lineWidth=.8;
+  for(let i=-12;i<=12;i+=5){bx.beginPath();bx.moveTo(i,-26);bx.quadraticCurveTo(i+1,-10,i,-4);bx.stroke();}
+  // ears
+  bx.fillStyle='#c8a070';
+  bx.beginPath();bx.moveTo(-14,-30);bx.lineTo(-22,-10);bx.lineTo(-5,-10);bx.closePath();bx.fill();
+  bx.beginPath();bx.moveTo(14,-30);bx.lineTo(22,-10);bx.lineTo(5,-10);bx.closePath();bx.fill();
+  bx.fillStyle='#d48090';
+  bx.beginPath();bx.moveTo(-12,-28);bx.lineTo(-18,-14);bx.lineTo(-7,-14);bx.closePath();bx.fill();
+  bx.beginPath();bx.moveTo(12,-28);bx.lineTo(18,-14);bx.lineTo(7,-14);bx.closePath();bx.fill();
+  // eyes – green
+  const eg=bx.createRadialGradient(-6,-17,1,-6,-17,5);eg.addColorStop(0,'#6ee7b7');eg.addColorStop(1,'#065f46');
+  bx.fillStyle=eg;bx.beginPath();bx.ellipse(-6,-17,5,5.5,-.1,0,Math.PI*2);bx.fill();
+  const eg2=bx.createRadialGradient(6,-17,1,6,-17,5);eg2.addColorStop(0,'#6ee7b7');eg2.addColorStop(1,'#065f46');
+  bx.fillStyle=eg2;bx.beginPath();bx.ellipse(6,-17,5,5.5,.1,0,Math.PI*2);bx.fill();
+  bx.fillStyle='#111';bx.beginPath();bx.ellipse(-6,-17,2,4,0,0,Math.PI*2);bx.fill();
+  bx.beginPath();bx.ellipse(6,-17,2,4,0,0,Math.PI*2);bx.fill();
+  bx.fillStyle='rgba(255,255,255,.85)';bx.beginPath();bx.arc(-5,-19,1.4,0,Math.PI*2);bx.fill();
+  bx.beginPath();bx.arc(7,-19,1.4,0,Math.PI*2);bx.fill();
+  // nose
+  bx.fillStyle='#e090a0';bx.beginPath();bx.moveTo(0,-11);bx.lineTo(-3,-8);bx.lineTo(3,-8);bx.closePath();bx.fill();
+  // mouth
+  bx.strokeStyle='#b07080';bx.lineWidth=.9;
+  bx.beginPath();bx.moveTo(0,-8);bx.lineTo(0,-5);bx.stroke();
+  bx.beginPath();bx.moveTo(0,-5);bx.quadraticCurveTo(-5,-1,-8,1);bx.stroke();
+  bx.beginPath();bx.moveTo(0,-5);bx.quadraticCurveTo(5,-1,8,1);bx.stroke();
+  // whiskers
+  bx.strokeStyle='rgba(220,200,160,.45)';bx.lineWidth=.7;
+  [[-26,-10,-4,-11],[-26,-7,-4,-8],[-26,-4,-4,-5]].forEach(([x1,y1,x2,y2])=>{bx.beginPath();bx.moveTo(x2,y2);bx.lineTo(x1,y1);bx.stroke();});
+  [[26,-10,4,-11],[26,-7,4,-8],[26,-4,4,-5]].forEach(([x1,y1,x2,y2])=>{bx.beginPath();bx.moveTo(x2,y2);bx.lineTo(x1,y1);bx.stroke();});
+  // tail
+  bx.strokeStyle='#c8a070';bx.lineWidth=8;bx.lineCap='round';
+  bx.beginPath();bx.moveTo(16,38);bx.bezierCurveTo(42,50,50,16,30,2);bx.stroke();
+  bx.strokeStyle='#ddb880';bx.lineWidth=4;
+  bx.beginPath();bx.moveTo(16,38);bx.bezierCurveTo(42,50,50,16,30,2);bx.stroke();
+  bx.restore();
+}
+
+const cols=Math.ceil(bg.width/95)+1,rows=Math.ceil(bg.height/95)+1;
+for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+  drawCat(c*93+47,r*93+47,.62+Math.random()*.28,.12+Math.random()*.16);
+}
+
+// ── HELPERS ──
+function showStage(id){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function burst(cx,cy,colors,count,maxR){
+  for(let i=0;i<count;i++){
+    const el=document.createElement('div');
+    el.className='spark';
+    const sz=4+Math.random()*8;
+    const ang=Math.random()*Math.PI*2,dist=60+Math.random()*maxR;
+    el.style.cssText=`width:${sz}px;height:${sz}px;background:${colors[i%colors.length]};left:${cx}px;top:${cy}px;--tx:${Math.cos(ang)*dist}px;--ty:${Math.sin(ang)*dist}px;animation-duration:${.6+Math.random()*.8}s;animation-delay:${Math.random()*.15}s;position:fixed;pointer-events:none;border-radius:50%`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1400);
+  }
+}
+
+function ribbons(cx,cy,count){
+  const cols=['#dc2626','#f59e0b','#a855f7','#3b82f6','#10b981','#f97316'];
+  for(let i=0;i<count;i++){
+    const el=document.createElement('div');
+    el.className='rib';
+    const ang=Math.random()*Math.PI*2,dist=80+Math.random()*160;
+    const w=40+Math.random()*30,h=7+Math.random()*5;
+    el.style.cssText=`width:${w}px;height:${h}px;background:${cols[i%cols.length]};left:${cx}px;top:${cy}px;--tx:${Math.cos(ang)*dist}px;--ty:${Math.sin(ang)*dist}px;--tr:${-200+Math.random()*400}deg;animation-duration:${.8+Math.random()*.6}s;animation-delay:${Math.random()*.2}s;position:fixed;pointer-events:none;border-radius:3px;opacity:.9`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1600);
+  }
+}
+
+function crackerBlast(side){
+  const el=document.getElementById(side==='l'?'cl':'cr');
+  const r=el.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  el.style.transition='all .5s';
+  el.style.transform=`rotate(${side==='l'?-55:55}deg) translateY(-50px)`;
+  el.style.opacity='0';
+  burst(cx,cy,['#f59e0b','#a855f7','#ef4444','#fff'],18,100);
+  ribbons(cx,cy,8);
+}
+
+// ── GIFT OPEN ──
+let opened=false;
+function openGift(){
+  if(opened)return; opened=true;
+  document.getElementById('hint').style.display='none';
+  document.getElementById('box-wrap').style.cursor='default';
+
+  // remove bow
+  setTimeout(()=>{document.getElementById('bow').classList.add('gone');},200);
+
+  // glow inside
+  setTimeout(()=>{document.getElementById('inner-glow').style.background='radial-gradient(ellipse at 50% 120%,rgba(255,240,150,.55),transparent 65%)';},600);
+
+  // open lid
+  setTimeout(()=>{document.getElementById('box-lid').classList.add('open');},700);
+
+  // crackers
+  setTimeout(()=>{crackerBlast('l');crackerBlast('r');},1100);
+
+  // ribbons from box
+  setTimeout(()=>{
+    const bx=document.getElementById('box-wrap').getBoundingClientRect();
+    const cx=bx.left+bx.width/2,cy=bx.top+bx.height/2;
+    ribbons(cx,cy-40,14);
+    burst(cx,cy-40,['#fbbf24','#fff','#fde68a'],20,120);
+  },1200);
+
+  // show inner box stage
+  setTimeout(()=>showStage('stage-inner'),2200);
+}
+
+// ── INNER BOX OPEN ──
+let innerOpened=false;
+function openInner(){
+  if(innerOpened)return; innerOpened=true;
+  document.getElementById('ihint').style.display='none';
+  document.getElementById('ibox-wrap').style.cursor='default';
+
+  setTimeout(()=>{document.getElementById('ibow').classList.add('gone');},200);
+  setTimeout(()=>{document.getElementById('ibox-lid').classList.add('open');},600);
+
+  setTimeout(()=>{
+    const bx=document.getElementById('ibox-wrap').getBoundingClientRect();
+    const cx=bx.left+bx.width/2,cy=bx.top+bx.height/2;
+    ribbons(cx,cy-20,12);
+    burst(cx,cy-20,['#a855f7','#3b82f6','#fbbf24','#fff'],22,130);
+  },900);
+
+  setTimeout(()=>showStage('stage-book'),2000);
+}
+
+function closeBook(){
+  document.getElementById('stage-book').classList.remove('active');
+}
+</script>
+</body>
+</html>
